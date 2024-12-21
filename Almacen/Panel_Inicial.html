@@ -98,34 +98,21 @@
       </div>
     </div>
   </div>
-
-  <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
-    // Recuperar el token del localStorage
     const token = localStorage.getItem("authToken");
-
     if (!token) {
       alert("No estás autenticado. Redirigiendo al login.");
       window.location.href = "login.html";
     }
-
-    // Base URL de la API
     const API_URL = "https://localhost:7140/api/Almacen";
-
-    // Mostrar resultados en pantalla
     const displayOutput = (message) => {
       const outputDiv = document.getElementById("output");
       outputDiv.innerHTML = message;
     };
-
-    // Limpiar resultados
     document.getElementById("clearOutput").addEventListener("click", () => {
       displayOutput('<p class="text-muted">Los resultados aparecerán aquí.</p>');
     });
-
-    // Obtener todos los almacenes
     document.getElementById("getAllAlmacenes").addEventListener("click", async () => {
       try {
         const response = await fetch(API_URL, {
@@ -134,7 +121,6 @@
             "Authorization": `Bearer ${token}`
           }
         });
-
         if (response.ok) {
           const data = await response.json();
           const formattedData = data.map(almacen => `<pre>${JSON.stringify(almacen, null, 2)}</pre>`).join("");
@@ -146,13 +132,9 @@
         displayOutput(`Error al conectar con la API: ${error.message}`);
       }
     });
-
-    // Buscar almacén por ID
     document.getElementById("getAlmacenByIdForm").addEventListener("submit", async (event) => {
       event.preventDefault();
-
       const id = document.getElementById("almacenId").value;
-
       try {
         const response = await fetch(`${API_URL}/${id}`, {
           method: "GET",
@@ -160,7 +142,6 @@
             "Authorization": `Bearer ${token}`
           }
         });
-
         if (response.ok) {
           const data = await response.json();
           displayOutput(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
@@ -173,17 +154,12 @@
         displayOutput(`Error al conectar con la API: ${error.message}`);
       }
     });
-
-    // Crear nuevo almacén
     document.getElementById("createAlmacenForm").addEventListener("submit", async (event) => {
       event.preventDefault();
-
       const nombre = document.getElementById("nombre").value;
       const id_producto = document.getElementById("id_producto").value;
       const id_orden = document.getElementById("id_orden").value;
-
       const nuevoAlmacen = { nombre, id_producto, id_orden };
-
       try {
         const response = await fetch(API_URL, {
           method: "POST",
@@ -193,7 +169,6 @@
           },
           body: JSON.stringify(nuevoAlmacen)
         });
-
         if (response.ok) {
           alert("Almacén creado exitosamente.");
           document.getElementById("getAllAlmacenes").click();
@@ -204,18 +179,13 @@
         alert(`Error al conectar con la API: ${error.message}`);
       }
     });
-
-    // Actualizar almacén
     document.getElementById("updateAlmacenForm").addEventListener("submit", async (event) => {
       event.preventDefault();
-
       const id = document.getElementById("updateId").value;
       const nombre = document.getElementById("updateNombre").value;
       const id_producto = document.getElementById("updateIdProducto").value;
       const id_orden = document.getElementById("updateIdOrden").value;
-
       const almacenActualizado = { id, nombre, id_producto, id_orden };
-
       try {
         const response = await fetch(`${API_URL}/${id}`, {
           method: "PUT",
@@ -225,7 +195,6 @@
           },
           body: JSON.stringify(almacenActualizado)
         });
-
         if (response.ok) {
           alert(`El almacén con ID ${id} fue actualizado exitosamente.`);
           document.getElementById("getAllAlmacenes").click();
@@ -236,17 +205,12 @@
         alert(`Error al conectar con la API: ${error.message}`);
       }
     });
-
-    // Eliminar almacén
     document.getElementById("deleteAlmacenForm").addEventListener("submit", async (event) => {
       event.preventDefault();
-
       const id = document.getElementById("deleteId").value;
-
       if (!confirm(`¿Estás seguro de que deseas eliminar el almacén con ID ${id}?`)) {
         return;
       }
-
       try {
         const response = await fetch(`${API_URL}/${id}`, {
           method: "DELETE",
@@ -254,7 +218,6 @@
             "Authorization": `Bearer ${token}`
           }
         });
-
         if (response.ok) {
           alert(`El almacén con ID ${id} fue eliminado exitosamente.`);
           document.getElementById("getAllAlmacenes").click();

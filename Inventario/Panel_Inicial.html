@@ -4,20 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión de Inventario</title>
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
   <div class="container mt-5">
     <h1 class="text-center mb-4">Gestión de Inventario</h1>
-
-    <!-- Botones para acciones -->
     <div class="d-flex justify-content-center mb-4">
       <button id="getAllInventarios" class="btn btn-primary me-2">Obtener Todo el Inventario</button>
       <button id="clearOutput" class="btn btn-secondary">Limpiar Datos</button>
     </div>
-
-    <!-- Formulario para buscar inventario por ID -->
     <div class="card mb-4">
       <div class="card-header bg-info text-white">
         <h2>Buscar Inventario por ID</h2>
@@ -32,8 +27,6 @@
         </form>
       </div>
     </div>
-
-    <!-- Formulario para crear un nuevo inventario -->
     <div class="card mb-4">
       <div class="card-header bg-success text-white">
         <h2>Crear Nuevo Inventario</h2>
@@ -56,8 +49,6 @@
         </form>
       </div>
     </div>
-
-    <!-- Formulario para actualizar un inventario -->
     <div class="card mb-4">
       <div class="card-header bg-warning text-white">
         <h2>Actualizar Inventario</h2>
@@ -84,8 +75,6 @@
         </form>
       </div>
     </div>
-
-    <!-- Formulario para eliminar inventario -->
     <div class="card mb-4">
       <div class="card-header bg-danger text-white">
         <h2>Eliminar Inventario</h2>
@@ -100,8 +89,6 @@
         </form>
       </div>
     </div>
-
-    <!-- Área para mostrar resultados -->
     <div class="card">
       <div class="card-header bg-secondary text-white">
         <h2>Resultados</h2>
@@ -111,34 +98,21 @@
       </div>
     </div>
   </div>
-
-  <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
-    // Recuperar el token del localStorage
     const token = localStorage.getItem("authToken");
-
     if (!token) {
       alert("No estás autenticado. Redirigiendo al login.");
       window.location.href = "login.html";
     }
-
-    // Base URL de la API
     const API_URL = "https://localhost:7140/api/Inventario";
-
-    // Mostrar resultados en pantalla
     const displayOutput = (message) => {
       const outputDiv = document.getElementById("output");
       outputDiv.innerHTML = message;
     };
-
-    // Limpiar resultados
     document.getElementById("clearOutput").addEventListener("click", () => {
       displayOutput('<p class="text-muted">Los resultados aparecerán aquí.</p>');
     });
-
-    // Obtener todo el inventario
     document.getElementById("getAllInventarios").addEventListener("click", async () => {
       try {
         const response = await fetch(API_URL, {
@@ -147,7 +121,6 @@
             "Authorization": `Bearer ${token}`
           }
         });
-
         if (response.ok) {
           const data = await response.json();
           const formattedData = data.map(inventario => `<pre>${JSON.stringify(inventario, null, 2)}</pre>`).join("");
@@ -159,13 +132,9 @@
         displayOutput(`Error al conectar con la API: ${error.message}`);
       }
     });
-
-    // Buscar inventario por ID
     document.getElementById("getInventarioByIdForm").addEventListener("submit", async (event) => {
       event.preventDefault();
-
       const id = document.getElementById("inventarioId").value;
-
       try {
         const response = await fetch(`${API_URL}/${id}`, {
           method: "GET",
@@ -173,7 +142,6 @@
             "Authorization": `Bearer ${token}`
           }
         });
-
         if (response.ok) {
           const data = await response.json();
           displayOutput(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
@@ -186,17 +154,12 @@
         displayOutput(`Error al conectar con la API: ${error.message}`);
       }
     });
-
-    // Crear nuevo inventario
     document.getElementById("createInventarioForm").addEventListener("submit", async (event) => {
       event.preventDefault();
-
       const id_producto = document.getElementById("id_producto").value;
       const id_materiaprima = document.getElementById("id_materiaprima").value;
       const id_almacen = document.getElementById("id_almacen").value;
-
       const nuevoInventario = { id_producto, id_materiaprima, id_almacen };
-
       try {
         const response = await fetch(API_URL, {
           method: "POST",
@@ -217,18 +180,13 @@
         alert(`Error al conectar con la API: ${error.message}`);
       }
     });
-
-    // Actualizar inventario
     document.getElementById("updateInventarioForm").addEventListener("submit", async (event) => {
       event.preventDefault();
-
       const id = document.getElementById("updateId").value;
       const id_producto = document.getElementById("updateIdProducto").value;
       const id_materiaprima = document.getElementById("updateIdMateriaPrima").value;
       const id_almacen = document.getElementById("updateIdAlmacen").value;
-
       const inventarioActualizado = { id, id_producto, id_materiaprima, id_almacen };
-
       try {
         const response = await fetch(`${API_URL}/${id}`, {
           method: "PUT",
@@ -238,7 +196,6 @@
           },
           body: JSON.stringify(inventarioActualizado)
         });
-
         if (response.ok) {
           alert(`El registro de inventario con ID ${id} fue actualizado exitosamente.`);
           document.getElementById("getAllInventarios").click();
@@ -249,8 +206,6 @@
         alert(`Error al conectar con la API: ${error.message}`);
       }
     });
-
-    // Eliminar inventario
     document.getElementById("deleteInventarioForm").addEventListener("submit", async (event) => {
       event.preventDefault();
 
@@ -259,7 +214,6 @@
       if (!confirm(`¿Estás seguro de que deseas eliminar el registro de inventario con ID ${id}?`)) {
         return;
       }
-
       try {
         const response = await fetch(`${API_URL}/${id}`, {
           method: "DELETE",
@@ -267,7 +221,6 @@
             "Authorization": `Bearer ${token}`
           }
         });
-
         if (response.ok) {
           alert(`El registro de inventario con ID ${id} fue eliminado exitosamente.`);
           document.getElementById("getAllInventarios").click();
