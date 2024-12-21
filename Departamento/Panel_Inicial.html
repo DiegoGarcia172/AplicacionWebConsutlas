@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Departamentos</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Gestión de Departamentos</h1>
+
+    <!-- Botones para acciones -->
+    <div class="d-flex justify-content-center mb-4">
+      <button id="getAllDepartamentos" class="btn btn-primary me-2">Obtener Todos los Departamentos</button>
+      <button id="clearOutput" class="btn btn-secondary">Limpiar Datos</button>
+    </div>
+
+    <!-- Formulario para buscar departamento por ID -->
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h2>Buscar Departamento por ID</h2>
+      </div>
+      <div class="card-body">
+        <form id="getDepartamentoByIdForm">
+          <div class="mb-3">
+            <label for="departamentoId" class="form-label">ID del Departamento:</label>
+            <input type="number" id="departamentoId" name="departamentoId" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para crear un nuevo departamento -->
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h2>Crear Nuevo Departamento</h2>
+      </div>
+      <div class="card-body">
+        <form id="createDepartamentoForm">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-success">Crear Departamento</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para actualizar un departamento -->
+    <div class="card mb-4">
+      <div class="card-header bg-warning text-white">
+        <h2>Actualizar Departamento</h2>
+      </div>
+      <div class="card-body">
+        <form id="updateDepartamentoForm">
+          <div class="mb-3">
+            <label for="updateId" class="form-label">ID del Departamento:</label>
+            <input type="number" id="updateId" name="updateId" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateNombre" class="form-label">Nombre:</label>
+            <input type="text" id="updateNombre" name="updateNombre" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-warning">Actualizar Departamento</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para eliminar departamento -->
+    <div class="card mb-4">
+      <div class="card-header bg-danger text-white">
+        <h2>Eliminar Departamento</h2>
+      </div>
+      <div class="card-body">
+        <form id="deleteDepartamentoForm">
+          <div class="mb-3">
+            <label for="deleteId" class="form-label">ID del Departamento:</label>
+            <input type="number" id="deleteId" name="deleteId" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-danger">Eliminar Departamento</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Área para mostrar resultados -->
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        <h2>Resultados</h2>
+      </div>
+      <div class="card-body" id="output">
+        <p class="text-muted">Los resultados aparecerán aquí.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Recuperar el token del localStorage
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      alert("No estás autenticado. Redirigiendo al login.");
+      window.location.href = "login.html";
+    }
+
+    // Base URL de la API
+    const API_URL = "https://localhost:7140/api/Departamento";
+
+    // Mostrar resultados en pantalla
+    const displayOutput = (message) => {
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = message;
+    };
+
+    // Limpiar resultados
+    document.getElementById("clearOutput").addEventListener("click", () => {
+      displayOutput('<p class="text-muted">Los resultados aparecerán aquí.</p>');
+    });
+
+    // Obtener todos los departamentos
+    document.getElementById("getAllDepartamentos").addEventListener("click", async () => {
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const formattedData = data.map(departamento => `<pre>${JSON.stringify(departamento, null, 2)}</pre>`).join("");
+          displayOutput(formattedData);
+        } else {
+          displayOutput(`Error: ${response.status}`);
+        }
+      } catch (error) {
+        displayOutput(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Buscar departamento por ID
+    document.getElementById("getDepartamentoByIdForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("departamentoId").value;
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          displayOutput(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
+        } else if (response.status === 404) {
+          displayOutput(`El departamento con ID ${id} no fue encontrado.`);
+        } else {
+          displayOutput(`Error: ${response.status}`);
+        }
+      } catch (error) {
+        displayOutput(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Crear nuevo departamento
+    document.getElementById("createDepartamentoForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const nombre = document.getElementById("nombre").value;
+
+      const nuevoDepartamento = { nombre };
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(nuevoDepartamento)
+        });
+
+        if (response.ok) {
+          alert("Departamento creado exitosamente.");
+          document.getElementById("getAllDepartamentos").click();
+        } else {
+          alert(`Error al crear el departamento: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Actualizar departamento
+    document.getElementById("updateDepartamentoForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("updateId").value;
+      const nombre = document.getElementById("updateNombre").value;
+
+      const departamentoActualizado = { id, nombre };
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(departamentoActualizado)
+        });
+
+        if (response.ok) {
+          alert(`El departamento con ID ${id} fue actualizado exitosamente.`);
+          document.getElementById("getAllDepartamentos").click();
+        } else {
+          alert(`Error al actualizar el departamento: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Eliminar departamento
+    document.getElementById("deleteDepartamentoForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("deleteId").value;
+
+      if (!confirm(`¿Estás seguro de que deseas eliminar el departamento con ID ${id}?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          alert(`El departamento con ID ${id} fue eliminado exitosamente.`);
+          document.getElementById("getAllDepartamentos").click();
+        } else {
+          alert(`Error al eliminar el departamento: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+  </script>
+</body>
+</html>

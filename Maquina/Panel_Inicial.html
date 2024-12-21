@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Máquinas</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Gestión de Máquinas</h1>
+
+    <!-- Botones para acciones -->
+    <div class="d-flex justify-content-center mb-4">
+      <button id="getAllMaquinas" class="btn btn-primary me-2">Obtener Todas las Máquinas</button>
+      <button id="clearOutput" class="btn btn-secondary">Limpiar Datos</button>
+    </div>
+
+    <!-- Formulario para buscar máquina por ID -->
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h2>Buscar Máquina por ID</h2>
+      </div>
+      <div class="card-body">
+        <form id="getMaquinaByIdForm">
+          <div class="mb-3">
+            <label for="maquinaId" class="form-label">ID de la Máquina:</label>
+            <input type="number" id="maquinaId" name="maquinaId" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para crear una nueva máquina -->
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h2>Crear Nueva Máquina</h2>
+      </div>
+      <div class="card-body">
+        <form id="createMaquinaForm">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="estado" class="form-label">Estado:</label>
+            <input type="text" id="estado" name="estado" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="tipo" class="form-label">Tipo:</label>
+            <input type="text" id="tipo" name="tipo" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="modelo" class="form-label">Modelo:</label>
+            <input type="text" id="modelo" name="modelo" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="id_proceso" class="form-label">ID del Proceso:</label>
+            <input type="number" id="id_proceso" name="id_proceso" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="id_ordenproduccion" class="form-label">ID de la Orden de Producción:</label>
+            <input type="number" id="id_ordenproduccion" name="id_ordenproduccion" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-success">Crear Máquina</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para actualizar una máquina -->
+    <div class="card mb-4">
+      <div class="card-header bg-warning text-white">
+        <h2>Actualizar Máquina</h2>
+      </div>
+      <div class="card-body">
+        <form id="updateMaquinaForm">
+          <div class="mb-3">
+            <label for="updateId" class="form-label">ID de la Máquina:</label>
+            <input type="number" id="updateId" name="updateId" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateNombre" class="form-label">Nombre:</label>
+            <input type="text" id="updateNombre" name="updateNombre" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateEstado" class="form-label">Estado:</label>
+            <input type="text" id="updateEstado" name="updateEstado" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateTipo" class="form-label">Tipo:</label>
+            <input type="text" id="updateTipo" name="updateTipo" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateModelo" class="form-label">Modelo:</label>
+            <input type="text" id="updateModelo" name="updateModelo" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateIdProceso" class="form-label">ID del Proceso:</label>
+            <input type="number" id="updateIdProceso" name="updateIdProceso" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateIdOrdenProduccion" class="form-label">ID de la Orden de Producción:</label>
+            <input type="number" id="updateIdOrdenProduccion" name="updateIdOrdenProduccion" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-warning">Actualizar Máquina</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para eliminar máquina -->
+    <div class="card mb-4">
+      <div class="card-header bg-danger text-white">
+        <h2>Eliminar Máquina</h2>
+      </div>
+      <div class="card-body">
+        <form id="deleteMaquinaForm">
+          <div class="mb-3">
+            <label for="deleteId" class="form-label">ID de la Máquina:</label>
+            <input type="number" id="deleteId" name="deleteId" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-danger">Eliminar Máquina</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Área para mostrar resultados -->
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        <h2>Resultados</h2>
+      </div>
+      <div class="card-body" id="output">
+        <p class="text-muted">Los resultados aparecerán aquí.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Recuperar el token del localStorage
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      alert("No estás autenticado. Redirigiendo al login.");
+      window.location.href = "login.html";
+    }
+
+    // Base URL de la API
+    const API_URL = "https://localhost:7140/api/Maquina";
+
+    // Mostrar resultados en pantalla
+    const displayOutput = (message) => {
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = message;
+    };
+
+    // Limpiar resultados
+    document.getElementById("clearOutput").addEventListener("click", () => {
+      displayOutput('<p class="text-muted">Los resultados aparecerán aquí.</p>');
+    });
+
+    // Obtener todas las máquinas
+    document.getElementById("getAllMaquinas").addEventListener("click", async () => {
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const formattedData = data.map(maquina => `<pre>${JSON.stringify(maquina, null, 2)}</pre>`).join("");
+          displayOutput(formattedData);
+        } else {
+          displayOutput(`Error: ${response.status}`);
+        }
+      } catch (error) {
+        displayOutput(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Buscar máquina por ID
+    document.getElementById("getMaquinaByIdForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("maquinaId").value;
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          displayOutput(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
+        } else if (response.status === 404) {
+          displayOutput(`La máquina con ID ${id} no fue encontrada.`);
+        } else {
+          displayOutput(`Error: ${response.status}`);
+        }
+      } catch (error) {
+        displayOutput(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Crear nueva máquina
+    document.getElementById("createMaquinaForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const nombre = document.getElementById("nombre").value;
+      const estado = document.getElementById("estado").value;
+      const tipo = document.getElementById("tipo").value;
+      const modelo = document.getElementById("modelo").value;
+      const id_proceso = document.getElementById("id_proceso").value;
+      const id_ordenproduccion = document.getElementById("id_ordenproduccion").value;
+
+      const nuevaMaquina = { nombre, estado, tipo, modelo, id_proceso, id_ordenproduccion };
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(nuevaMaquina)
+        });
+
+        if (response.ok) {
+          alert("Máquina creada exitosamente.");
+          document.getElementById("getAllMaquinas").click();
+        } else {
+          alert(`Error al crear la máquina: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Actualizar máquina
+    document.getElementById("updateMaquinaForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("updateId").value;
+      const nombre = document.getElementById("updateNombre").value;
+      const estado = document.getElementById("updateEstado").value;
+      const tipo = document.getElementById("updateTipo").value;
+      const modelo = document.getElementById("updateModelo").value;
+      const id_proceso = document.getElementById("updateIdProceso").value;
+      const id_ordenproduccion = document.getElementById("updateIdOrdenProduccion").value;
+
+      const maquinaActualizada = { id, nombre, estado, tipo, modelo, id_proceso, id_ordenproduccion };
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(maquinaActualizada)
+        });
+
+        if (response.ok) {
+          alert(`La máquina con ID ${id} fue actualizada exitosamente.`);
+          document.getElementById("getAllMaquinas").click();
+        } else {
+          alert(`Error al actualizar la máquina: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Eliminar máquina
+    document.getElementById("deleteMaquinaForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("deleteId").value;
+
+      if (!confirm(`¿Estás seguro de que deseas eliminar la máquina con ID ${id}?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          alert(`La máquina con ID ${id} fue eliminada exitosamente.`);
+          document.getElementById("getAllMaquinas").click();
+        } else {
+          alert(`Error al eliminar la máquina: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+  </script>
+</body>
+</html>

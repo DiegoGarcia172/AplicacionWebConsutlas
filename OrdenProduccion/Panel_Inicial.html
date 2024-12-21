@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Órdenes de Producción</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Gestión de Órdenes de Producción</h1>
+
+    <!-- Botones para acciones -->
+    <div class="d-flex justify-content-center mb-4">
+      <button id="getAllOrdenes" class="btn btn-primary me-2">Obtener Todas las Órdenes</button>
+      <button id="clearOutput" class="btn btn-secondary">Limpiar Datos</button>
+    </div>
+
+    <!-- Formulario para buscar orden por ID -->
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h2>Buscar Orden por ID</h2>
+      </div>
+      <div class="card-body">
+        <form id="getOrdenByIdForm">
+          <div class="mb-3">
+            <label for="ordenId" class="form-label">ID de la Orden:</label>
+            <input type="number" id="ordenId" name="ordenId" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para crear una nueva orden -->
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h2>Crear Nueva Orden</h2>
+      </div>
+      <div class="card-body">
+        <form id="createOrdenForm">
+          <div class="mb-3">
+            <label for="fechaOrden" class="form-label">Fecha de la Orden:</label>
+            <input type="date" id="fechaOrden" name="fechaOrden" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="cantidad" class="form-label">Cantidad:</label>
+            <input type="number" id="cantidad" name="cantidad" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="fechaEntrega" class="form-label">Fecha de Entrega:</label>
+            <input type="date" id="fechaEntrega" name="fechaEntrega" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="idEmpleado" class="form-label">ID del Empleado:</label>
+            <input type="number" id="idEmpleado" name="idEmpleado" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-success">Crear Orden</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para actualizar una orden -->
+    <div class="card mb-4">
+      <div class="card-header bg-warning text-white">
+        <h2>Actualizar Orden</h2>
+      </div>
+      <div class="card-body">
+        <form id="updateOrdenForm">
+          <div class="mb-3">
+            <label for="updateId" class="form-label">ID de la Orden:</label>
+            <input type="number" id="updateId" name="updateId" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateFechaOrden" class="form-label">Fecha de la Orden:</label>
+            <input type="date" id="updateFechaOrden" name="updateFechaOrden" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateCantidad" class="form-label">Cantidad:</label>
+            <input type="number" id="updateCantidad" name="updateCantidad" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateFechaEntrega" class="form-label">Fecha de Entrega:</label>
+            <input type="date" id="updateFechaEntrega" name="updateFechaEntrega" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateIdEmpleado" class="form-label">ID del Empleado:</label>
+            <input type="number" id="updateIdEmpleado" name="updateIdEmpleado" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-warning">Actualizar Orden</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para eliminar orden -->
+    <div class="card mb-4">
+      <div class="card-header bg-danger text-white">
+        <h2>Eliminar Orden</h2>
+      </div>
+      <div class="card-body">
+        <form id="deleteOrdenForm">
+          <div class="mb-3">
+            <label for="deleteId" class="form-label">ID de la Orden:</label>
+            <input type="number" id="deleteId" name="deleteId" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Área para mostrar resultados -->
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        <h2>Resultados</h2>
+      </div>
+      <div class="card-body" id="output">
+        <p class="text-muted">Los resultados aparecerán aquí.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Recuperar el token del localStorage
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      alert("No estás autenticado. Redirigiendo al login.");
+      window.location.href = "login.html";
+    }
+
+    // Base URL de la API
+    const API_URL = "https://localhost:7140/api/OrdenProduccion";
+
+    // Mostrar resultados en pantalla
+    const displayOutput = (message) => {
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = message;
+    };
+
+    // Limpiar resultados
+    document.getElementById("clearOutput").addEventListener("click", () => {
+      displayOutput('<p class="text-muted">Los resultados aparecerán aquí.</p>');
+    });
+
+    // Obtener todas las órdenes
+    document.getElementById("getAllOrdenes").addEventListener("click", async () => {
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const formattedData = data.map(orden => `<pre>${JSON.stringify(orden, null, 2)}</pre>`).join("");
+          displayOutput(formattedData);
+        } else {
+          displayOutput(`Error: ${response.status}`);
+        }
+      } catch (error) {
+        displayOutput(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Buscar orden por ID
+    document.getElementById("getOrdenByIdForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("ordenId").value;
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          displayOutput(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
+        } else if (response.status === 404) {
+          displayOutput(`La orden con ID ${id} no fue encontrada.`);
+        } else {
+          displayOutput(`Error: ${response.status}`);
+        }
+      } catch (error) {
+        displayOutput(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Crear nueva orden
+    document.getElementById("createOrdenForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const fechaOrden = document.getElementById("fechaOrden").value;
+      const cantidad = document.getElementById("cantidad").value;
+      const fechaEntrega = document.getElementById("fechaEntrega").value;
+      const idEmpleado = document.getElementById("idEmpleado").value;
+
+      const nuevaOrden = { fecha_orden: fechaOrden, cantidad, fecha_entrega: fechaEntrega, id_empleado: idEmpleado };
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(nuevaOrden)
+        });
+
+        if (response.ok) {
+          alert("Orden creada exitosamente.");
+          document.getElementById("getAllOrdenes").click();
+        } else {
+          alert(`Error al crear la orden: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Actualizar una orden
+    document.getElementById("updateOrdenForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("updateId").value;
+      const fechaOrden = document.getElementById("updateFechaOrden").value;
+      const cantidad = document.getElementById("updateCantidad").value;
+      const fechaEntrega = document.getElementById("updateFechaEntrega").value;
+      const idEmpleado = document.getElementById("updateIdEmpleado").value;
+
+      const ordenActualizada = { id, fecha_orden: fechaOrden, cantidad, fecha_entrega: fechaEntrega, id_empleado: idEmpleado };
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(ordenActualizada)
+        });
+
+        if (response.ok) {
+          alert(`La orden con ID ${id} fue actualizada exitosamente.`);
+          document.getElementById("getAllOrdenes").click();
+        } else {
+          alert(`Error al actualizar la orden: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Eliminar una orden
+    document.getElementById("deleteOrdenForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("deleteId").value;
+
+      if (!confirm(`¿Estás seguro de que deseas eliminar la orden con ID ${id}?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          alert(`La orden con ID ${id} fue eliminada exitosamente.`);
+          document.getElementById("getAllOrdenes").click();
+        } else {
+          alert(`Error al eliminar la orden: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+  </script>
+</body>
+</html>

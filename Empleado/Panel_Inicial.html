@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Empleados</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Gestión de Empleados</h1>
+
+    <!-- Botones para acciones -->
+    <div class="d-flex justify-content-center mb-4">
+      <button id="getAllEmpleados" class="btn btn-primary me-2">Obtener Todos los Empleados</button>
+      <button id="clearOutput" class="btn btn-secondary">Limpiar Datos</button>
+    </div>
+
+    <!-- Formulario para buscar empleado por ID -->
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h2>Buscar Empleado por ID</h2>
+      </div>
+      <div class="card-body">
+        <form id="getEmpleadoByIdForm">
+          <div class="mb-3">
+            <label for="empleadoId" class="form-label">ID del Empleado:</label>
+            <input type="number" id="empleadoId" name="empleadoId" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para crear un nuevo empleado -->
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h2>Crear Nuevo Empleado</h2>
+      </div>
+      <div class="card-body">
+        <form id="createEmpleadoForm">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="apellido_paterno" class="form-label">Apellido Paterno:</label>
+            <input type="text" id="apellido_paterno" name="apellido_paterno" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="apellido_materno" class="form-label">Apellido Materno:</label>
+            <input type="text" id="apellido_materno" name="apellido_materno" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="puesto" class="form-label">Puesto:</label>
+            <input type="text" id="puesto" name="puesto" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="id_departamento" class="form-label">ID del Departamento:</label>
+            <input type="number" id="id_departamento" name="id_departamento" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-success">Crear Empleado</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para actualizar un empleado -->
+    <div class="card mb-4">
+      <div class="card-header bg-warning text-white">
+        <h2>Actualizar Empleado</h2>
+      </div>
+      <div class="card-body">
+        <form id="updateEmpleadoForm">
+          <div class="mb-3">
+            <label for="updateId" class="form-label">ID del Empleado:</label>
+            <input type="number" id="updateId" name="updateId" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateNombre" class="form-label">Nombre:</label>
+            <input type="text" id="updateNombre" name="updateNombre" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateApellidoPaterno" class="form-label">Apellido Paterno:</label>
+            <input type="text" id="updateApellidoPaterno" name="updateApellidoPaterno" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateApellidoMaterno" class="form-label">Apellido Materno:</label>
+            <input type="text" id="updateApellidoMaterno" name="updateApellidoMaterno" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updatePuesto" class="form-label">Puesto:</label>
+            <input type="text" id="updatePuesto" name="updatePuesto" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="updateIdDepartamento" class="form-label">ID del Departamento:</label>
+            <input type="number" id="updateIdDepartamento" name="updateIdDepartamento" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-warning">Actualizar Empleado</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Formulario para eliminar empleado -->
+    <div class="card mb-4">
+      <div class="card-header bg-danger text-white">
+        <h2>Eliminar Empleado</h2>
+      </div>
+      <div class="card-body">
+        <form id="deleteEmpleadoForm">
+          <div class="mb-3">
+            <label for="deleteId" class="form-label">ID del Empleado:</label>
+            <input type="number" id="deleteId" name="deleteId" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-danger">Eliminar Empleado</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Área para mostrar resultados -->
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        <h2>Resultados</h2>
+      </div>
+      <div class="card-body" id="output">
+        <p class="text-muted">Los resultados aparecerán aquí.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Recuperar el token del localStorage
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      alert("No estás autenticado. Redirigiendo al login.");
+      window.location.href = "login.html";
+    }
+
+    // Base URL de la API
+    const API_URL = "https://localhost:7140/api/Empleado";
+
+    // Mostrar resultados en pantalla
+    const displayOutput = (message) => {
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = message;
+    };
+
+    // Limpiar resultados
+    document.getElementById("clearOutput").addEventListener("click", () => {
+      displayOutput('<p class="text-muted">Los resultados aparecerán aquí.</p>');
+    });
+
+    // Obtener todos los empleados
+    document.getElementById("getAllEmpleados").addEventListener("click", async () => {
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const formattedData = data.map(empleado => `<pre>${JSON.stringify(empleado, null, 2)}</pre>`).join("");
+          displayOutput(formattedData);
+        } else {
+          displayOutput(`Error: ${response.status}`);
+        }
+      } catch (error) {
+        displayOutput(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Buscar empleado por ID
+    document.getElementById("getEmpleadoByIdForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("empleadoId").value;
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          displayOutput(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
+        } else if (response.status === 404) {
+          displayOutput(`El empleado con ID ${id} no fue encontrado.`);
+        } else {
+          displayOutput(`Error: ${response.status}`);
+        }
+      } catch (error) {
+        displayOutput(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Crear nuevo empleado
+    document.getElementById("createEmpleadoForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const nombre = document.getElementById("nombre").value;
+      const apellido_paterno = document.getElementById("apellido_paterno").value;
+      const apellido_materno = document.getElementById("apellido_materno").value;
+      const puesto = document.getElementById("puesto").value;
+      const id_departamento = document.getElementById("id_departamento").value;
+
+      const nuevoEmpleado = { nombre, apellido_paterno, apellido_materno, puesto, id_departamento };
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(nuevoEmpleado)
+        });
+
+        if (response.ok) {
+          alert("Empleado creado exitosamente.");
+          document.getElementById("getAllEmpleados").click();
+        } else {
+          alert(`Error al crear el empleado: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Actualizar empleado
+    document.getElementById("updateEmpleadoForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("updateId").value;
+      const nombre = document.getElementById("updateNombre").value;
+      const apellido_paterno = document.getElementById("updateApellidoPaterno").value;
+      const apellido_materno = document.getElementById("updateApellidoMaterno").value;
+      const puesto = document.getElementById("updatePuesto").value;
+      const id_departamento = document.getElementById("updateIdDepartamento").value;
+
+      const empleadoActualizado = { id, nombre, apellido_paterno, apellido_materno, puesto, id_departamento };
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(empleadoActualizado)
+        });
+
+        if (response.ok) {
+          alert(`El empleado con ID ${id} fue actualizado exitosamente.`);
+          document.getElementById("getAllEmpleados").click();
+        } else {
+          alert(`Error al actualizar el empleado: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+
+    // Eliminar empleado
+    document.getElementById("deleteEmpleadoForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const id = document.getElementById("deleteId").value;
+
+      if (!confirm(`¿Estás seguro de que deseas eliminar el empleado con ID ${id}?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          alert(`El empleado con ID ${id} fue eliminado exitosamente.`);
+          document.getElementById("getAllEmpleados").click();
+        } else {
+          alert(`Error al eliminar el empleado: ${response.status}`);
+        }
+      } catch (error) {
+        alert(`Error al conectar con la API: ${error.message}`);
+      }
+    });
+  </script>
+</body>
+</html>
